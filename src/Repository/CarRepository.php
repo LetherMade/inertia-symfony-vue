@@ -101,6 +101,11 @@ class CarRepository extends ServiceEntityRepository
         $this->save($entity, true);
     }
 
+    public function flush() :void
+    {
+        $this->getEntityManager()->flush();
+    }
+
     public function remove(Car $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
