@@ -1,11 +1,13 @@
 import { defineConfig } from "vite";
-import symfonyPlugin from "vite-plugin-symfony";
-import vue from '@vitejs/plugin-vue'
+import SymfonyPlugin from "vite-plugin-symfony";
+import Vue from '@vitejs/plugin-vue'
+import DefineOptions from 'unplugin-vue-define-options/vite'
 
 export default defineConfig({
     plugins: [
-        vue({include: ['./assets/Pages/*']}),
-        symfonyPlugin()
+        Vue({include: ['./assets/Pages/**/*', './assets/Components/**/*']}),
+        SymfonyPlugin(),
+        DefineOptions()
     ],
     root: '.',
     base: '/build/',

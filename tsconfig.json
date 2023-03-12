@@ -11,7 +11,8 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["vite/client", "unplugin-vue-define-options/macros-global"]
   },
   "include": ["assets/**/*.ts", "assets/**/*.d.ts", "assets/**/*.tsx", "assets/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]

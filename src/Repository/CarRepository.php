@@ -4,6 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Car;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -21,6 +24,69 @@ class CarRepository extends ServiceEntityRepository
         parent::__construct($registry, Car::class);
     }
 
+    /** @return array<int, Car> */
+    public function findAllMatchingFilter(
+        ?string $search,
+        ?int $minPrice,
+        ?int $maxPrice,
+        int $limit,
+        int $offset,
+    ): array
+    {
+        $qb = $this->createQueryBuilderForFilter($search, $minPrice, $maxPrice);
+
+        $qb
+            ->addOrderBy('car.name')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
+
+        return $qb->getQuery()->execute();
+    }
+
+    public function countAllMatchingFilter(?string $search, ?int $minPrice, ?int $maxPrice): int
+    {
+        $qb = $this->createQueryBuilderForFilter($search, $minPrice, $maxPrice);
+
+        return (int)$qb->select('COUNT(car.id)')->getQuery()->getSingleScalarResult();
+    }
+
+    protected function createQueryBuilderForFilter(?string $search, ?int $minPrice, ?int $maxPrice): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('car');
+
+        if ($search !== null) {
+            $qb
+                ->andWhere(
+                    $qb->expr()->orX(
+                        $qb->expr()->like('car.name', ':searchTerm'),
+                    )
+                )
+                ->setParameter('searchTerm', '%' . $search . '%');
+        }
+
+        if ($minPrice !== null) {
+            $qb
+                ->andWhere(
+                    $qb->expr()->orX(
+                        $qb->expr()->gte('car.price', ':minPrice')
+                    )
+                )
+                ->setParameter('minPrice', $minPrice);
+        }
+
+        if ($maxPrice !== null) {
+            $qb
+                ->andWhere(
+                    $qb->expr()->orX(
+                        $qb->expr()->lte('car.price', ':maxPrice')
+                    )
+                )
+                ->setParameter('maxPrice', $maxPrice);
+        }
+
+        return $qb;
+    }
+
     public function save(Car $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
@@ -28,6 +94,11 @@ class CarRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function saveAndFlush(Car $entity): void
+    {
+        $this->save($entity, true);
     }
 
     public function remove(Car $entity, bool $flush = false): void

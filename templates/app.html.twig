@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Funix Cars{% endblock %}</title>
-        {% block stylesheets %}
-            {{ vite_entry_link_tags('app') }}
-        {% endblock %}
+<html class="h-screen bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    {% block stylesheets %}
+        {{ vite_entry_link_tags('app') }}
+    {% endblock %}
 
-        {{ inertiaHead(page) }}
-    </head>
-    <body>
-        {{ inertia(page) }}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
 
-        {% block javascripts %}
-            {{ vite_entry_script_tags('app') }}
-        {% endblock %}
-    </body>
+    {{ inertiaHead(page) }}
+</head>
+<body class="h-screen">
+{{ inertia(page) }}
+
+{% block javascripts %}
+    {{ vite_entry_script_tags('app') }}
+{% endblock %}
+</body>
 </html>

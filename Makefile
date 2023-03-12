@@ -1,9 +1,18 @@
 .PHONY: install
-install: install_vendors
+install: install_vendors install_assets
 
 .PHONY: install_vendors
 install_vendors:
 	symfony composer install
+
+.PHONY: install_assets
+install_assets:
+	symfony php bin/console assets:install --symlink public
+	npm run build
+
+.PHONY: test
+test:
+	./vendor/bin/pest
 
 .PHONY: fresh
 fresh:

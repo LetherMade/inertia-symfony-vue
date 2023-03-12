@@ -12,6 +12,7 @@
 */
 
 use App\Tests\TestCase;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 uses(TestCase::class)->in(__DIR__);
 
@@ -41,6 +42,6 @@ uses(TestCase::class)->in(__DIR__);
 |
 */
 
-//function login() {
-//    //
-//}
+function client(array $options = [], array $server = []): KernelBrowser {
+    return TestCase::client($options, $server);
+}

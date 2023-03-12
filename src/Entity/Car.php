@@ -5,11 +5,13 @@ namespace App\Entity;
 use App\Repository\CarRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CarRepository::class)]
 #[ORM\Index(columns: ['name'], name: 'name_idx')]
 #[ORM\Index(columns: ['price'], name: 'price_idx')]
+#[UniqueEntity(fields: ['name'], entityClass: Car::class)]
 class Car
 {
     #[ORM\Id]
@@ -24,6 +26,7 @@ class Car
 
     #[ORM\Column]
     #[Assert\NotBlank]
+    #[Assert\GreaterThan(0)]
     private int $price;
 
     #[ORM\Column]
@@ -31,11 +34,9 @@ class Car
     #[Assert\NotBlank]
     private \DateTimeImmutable $createdAt;
 
-    public function __construct(string $name, int $price, \DateTimeImmutable $createdAt)
+    public function __construct()
     {
-        $this->name = $name;
-        $this->price = $price;
-        $this->createdAt = $createdAt;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): string
@@ -43,25 +44,37 @@ class Car
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
-        return $this->name;
+        return $this->name ?? null;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
+        if (null === $name) {
+            unset($this->name);
+
+            return $this;
+        }
+
         $this->name = $name;
 
         return $this;
     }
 
-    public function getPrice(): int
+    public function getPrice(): ?int
     {
-        return $this->price;
+        return $this->price ?? null;
     }
 
-    public function setPrice(int $price): self
+    public function setPrice(?int $price): self
     {
+        if (null === $price) {
+            unset($this->price);
+
+            return $this;
+        }
+
         $this->price = $price;
 
         return $this;
@@ -77,5 +90,15 @@ class Car
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'price' => $this->getPrice(),
+            'createdAt' => $this->getCreatedAt()->format('d-m-Y H:i:s'),
+        ];
     }
 }
