@@ -13,6 +13,8 @@
 
 use App\Tests\TestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validation;
 
 uses(TestCase::class)->in(__DIR__);
 
@@ -42,6 +44,10 @@ uses(TestCase::class)->in(__DIR__);
 |
 */
 
-function client(array $options = [], array $server = []): KernelBrowser {
-    return TestCase::client($options, $server);
+function client(): KernelBrowser {
+    return test()->client();
+}
+
+function validate(object $entity): ConstraintViolationListInterface {
+    return test()->validate($entity);
 }
