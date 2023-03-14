@@ -1,5 +1,5 @@
 .PHONY: install
-install: install_vendors install_assets
+install: start install_vendors install_assets fresh
 
 .PHONY: install_vendors
 install_vendors:
